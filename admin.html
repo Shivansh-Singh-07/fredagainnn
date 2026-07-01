@@ -12,12 +12,9 @@
     <main class="admin-shell">
       <section class="admin-login panel" id="adminLogin">
         <p class="micro">Admin Login</p>
-        <h1>Enter passcode.</h1>
-        <form id="loginForm">
-          <label>Passcode<input type="password" name="passcode" autocomplete="current-password" required /></label>
-          <button class="btn btn-lime full" type="submit">Unlock Dashboard</button>
-          <p class="privacy-note">This area is for hosts only.</p>
-        </form>
+        <h1>Sign in with Google.</h1>
+        <button class="btn btn-lime full" id="adminGoogleLogin" type="button">Continue with Google</button>
+        <p class="privacy-note" id="adminLoginNote">Only allowlisted host emails can unlock this dashboard.</p>
       </section>
 
       <section class="dashboard hidden" id="dashboard">
@@ -33,7 +30,10 @@
               <p class="micro">Dashboard Overview</p>
               <h1>Listening Party Control</h1>
             </div>
-            <a class="btn btn-outline" href="index.html">View Site</a>
+            <div class="hero-actions">
+              <a class="btn btn-outline" href="index.html">View Site</a>
+              <button class="btn btn-outline" id="adminLogout" type="button">Logout</button>
+            </div>
           </header>
 
           <section class="stats-grid" id="overview">

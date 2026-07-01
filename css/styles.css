@@ -76,8 +76,25 @@ button { cursor: pointer; }
 }
 
 .brand { color: var(--text); }
-.topbar-actions { display: flex; gap: 20px; }
+.topbar-actions { display: flex; gap: 14px; align-items: center; }
 .ghost-link:hover { color: var(--lime); }
+.auth-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.user-pill {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+  font-size: 0.82rem;
+}
 
 .photo-screen {
   position: relative;
@@ -168,6 +185,12 @@ button { cursor: pointer; }
   font-weight: 760;
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .countdown {
   display: grid;
   grid-template-columns: repeat(4, minmax(70px, 112px));
@@ -218,6 +241,22 @@ button { cursor: pointer; }
 }
 
 .panel { padding: clamp(18px, 3vw, 34px); }
+
+.event-brief {
+  padding-bottom: 24px;
+}
+
+.brief-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.brief-grid p:not(.micro) {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
 
 .btn {
   display: inline-flex;
@@ -631,7 +670,7 @@ tbody tr:hover { background: rgba(255,255,255,0.035); }
 .danger-row { display: flex; justify-content: space-between; gap: 10px; }
 
 @media (max-width: 900px) {
-  .lookup, .two-col, .approved-grid, .admin-grid, .stats-grid, .table-toolbar, .submit-track {
+  .lookup, .two-col, .approved-grid, .admin-grid, .stats-grid, .table-toolbar, .submit-track, .brief-grid {
     grid-template-columns: 1fr;
   }
   .dashboard { grid-template-columns: 1fr; }

@@ -15,8 +15,10 @@
       <nav class="topbar reveal">
         <a class="brand" href="#home">FRED AGAIN..</a>
         <div class="topbar-actions">
-          <a href="#status" class="ghost-link">Status</a>
-          <a href="admin.html" class="ghost-link">Host</a>
+          <span class="user-pill hidden" id="userPill"></span>
+          <button class="ghost-link auth-link" id="navLogin" type="button">Login</button>
+          <button class="ghost-link auth-link hidden" id="navLogout" type="button">Logout</button>
+          <a href="admin.html" class="ghost-link hidden" id="adminPanelLink">Admin Panel</a>
         </div>
       </nav>
       <div class="hero-inner">
@@ -31,12 +33,36 @@
           <div class="time-block"><span data-unit="minutes">00</span><small>Mins</small></div>
           <div class="time-block"><span data-unit="seconds">00</span><small>Secs</small></div>
         </div>
-        <a href="#apply" class="btn btn-lime btn-hero reveal">Apply for a Spot</a>
+        <div class="hero-actions reveal">
+          <button class="btn btn-lime btn-hero" id="heroLogin" type="button">Continue with Google</button>
+          <a href="#eventApp" class="btn btn-outline hidden" id="enterSite">Enter the Site</a>
+        </div>
       </div>
       <div class="hero-tags reveal">PRIVATE · INVITE ONLY · GOOD VIBES ONLY</div>
     </header>
 
-    <main>
+    <main id="eventApp" class="hidden">
+      <section class="section event-brief">
+        <div class="section-heading reveal">
+          <p class="micro">You Are Signed In</p>
+          <h2>The room opens from here.</h2>
+        </div>
+        <div class="brief-grid">
+          <article class="panel reveal">
+            <p class="micro">What This Is</p>
+            <p>A private in-person Fred again.. listening night. Apply once, then your Google login keeps your application and status connected to you.</p>
+          </article>
+          <article class="panel reveal">
+            <p class="micro">Live Status</p>
+            <p>Your status updates automatically when the host reviews your application. Approved guests unlock requests, details, and who's coming.</p>
+          </article>
+          <article class="panel reveal">
+            <p class="micro">Privacy</p>
+            <p>Only the host can review full applications. Guest-facing screens show only event-safe public information.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="section section-tight" id="apply">
         <div class="section-heading reveal">
           <p class="micro">Tell Us About You</p>
@@ -184,6 +210,7 @@
 
     <script type="module" src="js/background-images.js"></script>
     <script type="module" src="js/animations.js"></script>
+    <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/application-form.js"></script>
     <script type="module" src="js/guest-status.js"></script>
     <script type="module" src="js/requests.js"></script>

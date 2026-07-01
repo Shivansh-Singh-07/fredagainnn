@@ -1,9 +1,9 @@
 import {
+  auth,
   db,
   EVENT_CONFIG,
   collection,
   doc,
-  getDoc,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -12,12 +12,19 @@ import {
   onSnapshot,
   serverTimestamp,
   relativeTime,
-  statusLookupId
+  statusLookupId,
+  googleProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  isAdminEmail
 } from "./firebase-init.js";
 
 const login = document.querySelector("#adminLogin");
 const dashboard = document.querySelector("#dashboard");
-const loginForm = document.querySelector("#loginForm");
+const adminGoogleLogin = document.querySelector("#adminGoogleLogin");
+const adminLoginNote = document.querySelector("#adminLoginNote");
+const adminLogout = document.querySelector("#adminLogout");
 const table = document.querySelector("#applicationsTable");
 const detailPanel = document.querySelector("#detailPanel");
 const detailContent = document.querySelector("#detailContent");
@@ -26,35 +33,49 @@ const sortSelect = document.querySelector("#sortSelect");
 const tabs = document.querySelector("#statusTabs");
 let apps = [];
 let filter = "all";
+let unsubscribeApplications;
 
-if (loginForm) {
-  if (sessionStorage.getItem("hostUnlocked") === "true") unlock();
+adminGoogleLogin?.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (error) {
+    console.error(error);
+    adminLoginNote.textContent = "Google login failed. Check Firebase Auth setup and authorized domains.";
+  }
+});
 
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const passcode = new FormData(loginForm).get("passcode");
-    try {
-      const snap = await getDoc(doc(db, "settings", "admin"));
-      const expected = snap.data()?.passcode;
-      if (expected && passcode === expected) {
-        sessionStorage.setItem("hostUnlocked", "true");
-        unlock();
-      } else {
-        loginForm.querySelector(".privacy-note").textContent = "Passcode did not match.";
-      }
-    } catch (error) {
-      console.error(error);
-      loginForm.querySelector(".privacy-note").textContent = "Could not check passcode. Confirm Firebase setup.";
-    }
-  });
+adminLogout?.addEventListener("click", () => signOut(auth));
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    lock("Sign in with your host Google account.");
+    return;
+  }
+  if (!isAdminEmail(user.email)) {
+    lock(`${user.email} is signed in, but it is not in ADMIN_EMAILS.`);
+    return;
+  }
+  unlock(user);
+});
+
+function lock(message) {
+  if (unsubscribeApplications) unsubscribeApplications();
+  dashboard.classList.add("hidden");
+  login.classList.remove("hidden");
+  if (adminLoginNote) adminLoginNote.textContent = message;
 }
 
-function unlock() {
+function unlock(user) {
   login.classList.add("hidden");
   dashboard.classList.remove("hidden");
-  onSnapshot(query(collection(db, "applications"), orderBy("submitted_at", "desc")), (snap) => {
+  if (adminLoginNote) adminLoginNote.textContent = `Signed in as ${user.email}.`;
+  if (unsubscribeApplications) unsubscribeApplications();
+  unsubscribeApplications = onSnapshot(query(collection(db, "applications"), orderBy("submitted_at", "desc")), (snap) => {
     apps = snap.docs.map((item) => ({ id: item.id, ...item.data() }));
     renderAll();
+  }, (error) => {
+    console.error(error);
+    lock("Could not read applications. Check Firestore security rules.");
   });
 }
 

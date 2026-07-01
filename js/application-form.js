@@ -1,4 +1,5 @@
 import {
+  auth,
   db,
   EVENT_CONFIG,
   collection,
@@ -27,6 +28,18 @@ if (form) {
   const partySizeInput = form.elements.party_size;
 
   partySizeInput.max = EVENT_CONFIG.MAX_PARTY_SIZE;
+
+  function syncUser(user) {
+    if (!user) return;
+    if (form.elements.name && !form.elements.name.value) form.elements.name.value = user.displayName || "";
+    if (form.elements.email) {
+      form.elements.email.value = normalizeEmail(user.email);
+      form.elements.email.readOnly = true;
+    }
+  }
+
+  syncUser(auth.currentUser);
+  document.addEventListener("auth-user-changed", (event) => syncUser(event.detail.user));
 
   function setMessage(text = "", type = "") {
     message.textContent = text;
@@ -83,6 +96,10 @@ if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (submitting || !validateStep()) return;
+    if (!auth.currentUser) {
+      setMessage("Please login with Google before submitting.", "error");
+      return;
+    }
     submitting = true;
     submit.disabled = true;
     setMessage("Submitting your application...", "success");
@@ -90,7 +107,10 @@ if (form) {
     const substances = [...form.querySelectorAll("[data-substances] input:checked")].map((item) => item.value);
     const payload = {
       name: data.get("name").trim(),
-      email: normalizeEmail(data.get("email")),
+      email: normalizeEmail(auth.currentUser.email),
+      uid: auth.currentUser.uid,
+      google_name: auth.currentUser.displayName || "",
+      google_photo_url: auth.currentUser.photoURL || "",
       phone: data.get("phone").trim(),
       party_type: partyType,
       party_size: Number(data.get("party_size") || 1),
@@ -118,6 +138,7 @@ if (form) {
         updated_at: serverTimestamp()
       });
       form.reset();
+      syncUser(auth.currentUser);
       form.querySelector('[data-value="Solo"]').click();
       setStep(0);
       document.querySelector("#confirmation").classList.remove("hidden");

@@ -1,6 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
 import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import {
   getFirestore,
   collection,
   addDoc,
@@ -19,13 +26,17 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-import { firebaseConfig, EVENT_CONFIG as localEventConfig } from "../firebase-config.js";
+import { firebaseConfig, EVENT_CONFIG as localEventConfig, ADMIN_EMAILS as localAdminEmails } from "../firebase-config.js";
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 export const analyticsReady = isSupported()
   .then((supported) => supported ? getAnalytics(app) : null)
   .catch(() => null);
+
+export const ADMIN_EMAILS = (localAdminEmails || []).map((email) => normalizeEmail(email));
 
 export const EVENT_CONFIG = {
   MAX_GUESTS: 120,
@@ -52,11 +63,18 @@ export {
   onSnapshot,
   serverTimestamp,
   increment,
-  setDoc
+  setDoc,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut
 };
 
 export function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
+}
+
+export function isAdminEmail(email) {
+  return ADMIN_EMAILS.includes(normalizeEmail(email));
 }
 
 export async function statusLookupId(email) {

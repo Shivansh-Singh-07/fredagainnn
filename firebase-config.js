@@ -16,3 +16,7 @@ export const EVENT_CONFIG = {
   ARRIVAL_TIME: "Saturday, 8:30 PM",
   DRESS_CODE: "Black, silver, something you can move in"
 };
+
+export const ADMIN_EMAILS = [
+  "shivanshsingh7117@gmail.com"
+];

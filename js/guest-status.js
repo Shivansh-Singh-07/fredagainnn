@@ -1,8 +1,11 @@
 import {
+  auth,
   db,
   EVENT_CONFIG,
   doc,
   getDoc,
+  onSnapshot,
+  onAuthStateChanged,
   normalizeEmail,
   statusLookupId
 } from "./firebase-init.js";
@@ -10,8 +13,20 @@ import { icon } from "./animations.js";
 
 const form = document.querySelector("#statusForm");
 const result = document.querySelector("#statusResult");
+let unsubscribeStatus;
 
 if (form && result) {
+  const emailInput = form.elements.status_email;
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      if (unsubscribeStatus) unsubscribeStatus();
+      return;
+    }
+    emailInput.value = normalizeEmail(user.email);
+    watchStatus(user.email);
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const email = normalizeEmail(new FormData(form).get("status_email"));
@@ -28,6 +43,21 @@ if (form && result) {
       console.error(error);
       result.innerHTML = `<article class="status-panel panel"><h3>Could not check status</h3><p>Make sure Firebase is configured and the lookup index exists.</p></article>`;
     }
+  });
+}
+
+async function watchStatus(email) {
+  if (!result) return;
+  if (unsubscribeStatus) unsubscribeStatus();
+  const ref = doc(db, "status_lookup", await statusLookupId(email));
+  unsubscribeStatus = onSnapshot(ref, (snap) => {
+    if (!snap.exists()) {
+      result.innerHTML = `<article class="status-panel panel"><p class="micro">Registration Status</p><h3>Not registered yet.</h3><p>Submit the application form and this panel will update automatically.</p></article>`;
+      return;
+    }
+    renderStatus({ id: snap.id, ...snap.data() });
+  }, (error) => {
+    console.error(error);
   });
 }
 
