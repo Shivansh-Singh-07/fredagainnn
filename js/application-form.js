@@ -131,6 +131,7 @@ if (form) {
       const created = await addDoc(collection(db, "applications"), payload);
       await setDoc(doc(db, "status_lookup", await statusLookupId(payload.email)), {
         application_id: created.id,
+        uid: payload.uid,
         email: payload.email,
         status: "pending",
         party_size: payload.party_size,

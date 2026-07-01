@@ -1,42 +1,140 @@
 # Fred again.. Listening Party
 
-Private invite-only listening party site built with pure HTML, CSS, vanilla JavaScript, and Firebase Firestore via CDN modules.
+Private invite-only listening party site built with pure HTML, CSS, vanilla JavaScript, Firebase Google Auth, and Firestore via CDN modules.
 
 ## File Structure
 
 ```text
 index.html
 admin.html
+firebase-config.js
+firebase-config.example.js
 css/styles.css
 js/background-images.js
 js/firebase-init.js
+js/auth.js
 js/application-form.js
 js/guest-status.js
 js/requests.js
 js/admin.js
 js/animations.js
 assets/
-firebase-config.example.js
 ```
+
+## Current Flow
+
+1. Public landing page loads first.
+2. User clicks `Continue with Google`.
+3. After Google login, the main event site appears.
+4. The application form uses the logged-in Google email.
+5. The status panel updates live from Firestore.
+6. If the logged-in email is in `ADMIN_EMAILS`, an `Admin Panel` button appears.
+7. The admin dashboard lets the host view, approve, reject, update, and delete registrations.
 
 ## Firebase Setup
 
-1. Create a Firebase project.
-2. Enable Firestore Database.
-3. Copy `firebase-config.example.js` to `firebase-config.js`.
-4. Paste your Firebase web app config into `firebase-config.js`.
-5. Keep `firebase-config.js` private. It is already gitignored.
+1. Open Firebase Console.
+2. Select project: `private-listening-party`.
+3. Go to `Build -> Authentication -> Sign-in method`.
+4. Enable `Google`.
+5. Go to `Authentication -> Settings -> Authorized domains`.
+6. Add these domains:
+   - `localhost`
+   - `shivansh-singh-07.github.io`
+   - your custom domain, if you add one later
+7. Go to `Build -> Firestore Database` and create/enable the database.
+8. Go to `Firestore Database -> Rules`.
+9. Paste the rules from `Firestore Rules` below.
+10. Publish the rules.
 
-Example admin passcode document:
+## Set Your Admin Email
 
-```text
-Collection: settings
-Document: admin
-Field: passcode
-Value: your-private-passcode
+Open `firebase-config.js` and replace the placeholder:
+
+```js
+export const ADMIN_EMAILS = [
+  "your-email@gmail.com"
+];
 ```
 
-The static admin passcode is a convenience gate for a private event. A client-only site cannot truly hide privileged Firestore access from a determined user without Firebase Auth, custom claims, or a backend function.
+Use the exact Google email you will login with. Keep it lowercase.
+
+Also replace the same email in the Firestore rules below:
+
+```js
+request.auth.token.email in ["your-email@gmail.com"]
+```
+
+## Firestore Rules
+
+Paste this into Firebase Console -> Firestore Database -> Rules.
+
+Important: replace `your-email@gmail.com` with your real admin Gmail.
+
+```js
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ["your-email@gmail.com"];
+    }
+
+    match /applications/{id} {
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.status == "pending"
+        && request.resource.data.party_size <= 4;
+
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow create, update: if isSignedIn()
+        && request.auth.uid == uid;
+
+      allow read, delete: if isAdmin();
+    }
+
+    match /status_lookup/{id} {
+      allow get: if true;
+      allow list: if false;
+
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.status == "pending";
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /approved_guests/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /song_requests/{id} {
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && request.resource.data.track is string
+        && request.resource.data.artist is string
+        && request.resource.data.votes == 0;
+
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(["votes"])
+        && request.resource.data.votes == resource.data.votes + 1;
+
+      allow delete: if isAdmin();
+    }
+  }
+}
+```
 
 ## Change Event Limits
 
@@ -55,84 +153,74 @@ export const EVENT_CONFIG = {
 
 ## Swap Background Images
 
-Replace the files in `assets/`, or edit `js/background-images.js`:
+Replace files in `assets/`, or edit `js/background-images.js`:
 
 ```js
 export const BACKGROUND_IMAGES = {
   hero: "assets/hero.jpg",
   confirmation: "assets/confirmation.jpg",
-  approved: "assets/approved.jpg"
+  approved: "assets/approved.jpg",
+  requests: "assets/requests.jpg",
+  crowd: "assets/crowd.jpg"
 };
 ```
 
-## Firestore Collections
+## What To Do Whenever Code Is Updated
 
-- `applications`: form submissions and host review data
-- `status_lookup`: minimal public status records populated by the admin dashboard
-- `approved_guests`: public approved guest list populated by the admin dashboard
-- `song_requests`: approved guest request wall
-- `settings/admin`: passcode document
+1. Save all files.
+2. Open `firebase-config.js`.
+3. Confirm `ADMIN_EMAILS` contains your real Gmail.
+4. If README Firestore rules changed, paste the latest rules into Firebase Console and publish.
+5. Confirm Google Auth is enabled.
+6. Confirm GitHub Pages authorized domain exists in Firebase Auth:
+   - `shivansh-singh-07.github.io`
+7. Commit and push:
 
-## Security Rules Starting Point
-
-Paste and adapt in the Firebase console. These rules are intentionally conservative for public writes and public approved guest/request reads. True admin-only reads/writes require Firebase Auth/custom claims or a trusted backend.
-
-```js
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isAdmin() {
-      return request.auth != null && request.auth.token.admin == true;
-    }
-
-    match /applications/{id} {
-      allow create: if true
-        && request.resource.data.status == "pending"
-        && request.resource.data.email is string
-        && request.resource.data.party_size <= 4;
-      allow read, update, delete: if isAdmin();
-    }
-
-    match /status_lookup/{id} {
-      allow get: if true;
-      allow list: if false;
-      allow create: if request.resource.data.status == "pending"
-        && request.resource.data.email is string;
-      allow update, delete: if isAdmin();
-    }
-
-    match /approved_guests/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /song_requests/{id} {
-      allow read: if true;
-      allow create: if true
-        && request.resource.data.track is string
-        && request.resource.data.artist is string
-        && request.resource.data.votes == 0;
-      allow update: if request.resource.data.diff(resource.data).changedKeys().hasOnly(["votes"])
-        && request.resource.data.votes == resource.data.votes + 1;
-      allow delete: if isAdmin();
-    }
-
-    match /settings/{id} {
-      allow read, write: if isAdmin();
-    }
-  }
-}
+```bash
+git add .
+git commit -m "Update listening party site"
+git push
 ```
 
-For the included passcode-only demo, you may temporarily loosen admin reads/writes while testing in a private project, then replace with Auth before sharing the admin URL.
+8. Wait 1-3 minutes for GitHub Pages to redeploy.
+9. Hard refresh the site:
+   - Windows: `Ctrl + Shift + R`
+   - Mac: `Cmd + Shift + R`
+10. Test in this order:
+   - Landing page appears.
+   - Google login works.
+   - Main event site appears after login.
+   - Application can submit.
+   - Status panel updates.
+   - Admin Panel button appears only for your admin email.
+   - Admin dashboard can approve, reject, update, and delete registrations.
+
+## Troubleshooting
+
+`FirebaseError: Missing or insufficient permissions`
+
+Your Firestore rules do not match the current auth flow, or your admin email in the rules is wrong. Paste the rules above and replace `your-email@gmail.com`.
+
+`Cross-Origin-Opener-Policy would block the window.closed call`
+
+This is common noise from Google popup sign-in in Chrome. The code now falls back to redirect login if the popup is blocked or closed.
+
+`net::ERR_BLOCKED_BY_CLIENT`
+
+Usually an ad blocker/privacy extension blocked a Firebase or Google request. Disable the blocker for your GitHub Pages site and Firebase domains while testing.
+
+Google login fails on GitHub Pages
+
+Add `shivansh-singh-07.github.io` under Firebase Authentication -> Settings -> Authorized domains.
 
 ## Deployment
 
 GitHub Pages:
 
-1. Push the folder to GitHub.
+1. Push the repo to GitHub.
 2. In repository settings, enable Pages from the main branch root.
-3. Add `firebase-config.js` locally before deploying, or inject it in your deploy process.
+3. Wait for deployment.
+4. Open the GitHub Pages URL.
 
 Vercel:
 

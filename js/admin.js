@@ -14,8 +14,10 @@ import {
   relativeTime,
   statusLookupId,
   googleProvider,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   isAdminEmail
 } from "./firebase-init.js";
@@ -40,6 +42,10 @@ adminGoogleLogin?.addEventListener("click", async () => {
     await signInWithPopup(auth, googleProvider);
   } catch (error) {
     console.error(error);
+    if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
     adminLoginNote.textContent = "Google login failed. Check Firebase Auth setup and authorized domains.";
   }
 });
@@ -256,6 +262,7 @@ function openDetail(app) {
     await updateDoc(doc(db, "applications", app.id), payload);
     await setDoc(doc(db, "status_lookup", await statusLookupId(app.email)), {
       application_id: app.id,
+      uid: app.uid || "",
       email: app.email,
       status,
       party_size: Number(app.party_size || 1),
@@ -303,3 +310,5 @@ function escapeHTML(value) {
     "'": "&#039;"
   }[char]));
 }
+
+getRedirectResult(auth).catch(console.error);

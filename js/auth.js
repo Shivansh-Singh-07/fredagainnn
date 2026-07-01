@@ -5,8 +5,10 @@ import {
   setDoc,
   serverTimestamp,
   googleProvider,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   isAdminEmail,
   normalizeEmail
@@ -26,6 +28,10 @@ async function login() {
     await signInWithPopup(auth, googleProvider);
   } catch (error) {
     console.error(error);
+    if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
     alert("Google login could not complete. Check Firebase Auth setup and authorized domains.");
   }
 }
@@ -93,3 +99,5 @@ onAuthStateChanged(auth, async (user) => {
     window.setTimeout(() => eventApp?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
   }
 });
+
+getRedirectResult(auth).catch(console.error);
