@@ -16,7 +16,6 @@ import {
   googleProvider,
   getRedirectResult,
   onAuthStateChanged,
-  signInWithPopup,
   signInWithRedirect,
   signOut,
   isAdminEmail
@@ -39,13 +38,9 @@ let unsubscribeApplications;
 
 adminGoogleLogin?.addEventListener("click", async () => {
   try {
-    await signInWithPopup(auth, googleProvider);
+    await signInWithRedirect(auth, googleProvider);
   } catch (error) {
     console.error(error);
-    if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
-      await signInWithRedirect(auth, googleProvider);
-      return;
-    }
     adminLoginNote.textContent = "Google login failed. Check Firebase Auth setup and authorized domains.";
   }
 });
@@ -81,7 +76,7 @@ function unlock(user) {
     renderAll();
   }, (error) => {
     console.error(error);
-    lock("Could not read applications. Check Firestore security rules.");
+    lock(`Could not read applications for ${user.email}. Paste the README Firestore rules, confirm this email is in the admin list, and disable ad blockers for this site.`);
   });
 }
 

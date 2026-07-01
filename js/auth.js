@@ -7,7 +7,6 @@ import {
   googleProvider,
   getRedirectResult,
   onAuthStateChanged,
-  signInWithPopup,
   signInWithRedirect,
   signOut,
   isAdminEmail,
@@ -25,13 +24,9 @@ let scrollAfterLogin = false;
 
 async function login() {
   try {
-    await signInWithPopup(auth, googleProvider);
+    await signInWithRedirect(auth, googleProvider);
   } catch (error) {
     console.error(error);
-    if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
-      await signInWithRedirect(auth, googleProvider);
-      return;
-    }
     alert("Google login could not complete. Check Firebase Auth setup and authorized domains.");
   }
 }

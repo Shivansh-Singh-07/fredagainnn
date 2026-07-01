@@ -1,4 +1,4 @@
-# Fred again.. Listening Party
+﻿# Fred again.. Listening Party
 
 Private invite-only listening party site built with pure HTML, CSS, vanilla JavaScript, Firebase Google Auth, and Firestore via CDN modules.
 
@@ -53,7 +53,7 @@ Open `firebase-config.js` and replace the placeholder:
 
 ```js
 export const ADMIN_EMAILS = [
-  "your-email@gmail.com"
+  "shivanshsingh7117@gmail.com"
 ];
 ```
 
@@ -62,14 +62,14 @@ Use the exact Google email you will login with. Keep it lowercase.
 Also replace the same email in the Firestore rules below:
 
 ```js
-request.auth.token.email in ["your-email@gmail.com"]
+request.auth.token.email in ["shivanshsingh7117@gmail.com"]
 ```
 
 ## Firestore Rules
 
 Paste this into Firebase Console -> Firestore Database -> Rules.
 
-Important: replace `your-email@gmail.com` with your real admin Gmail.
+Important: these rules are already set for `shivanshsingh7117@gmail.com`. If you use a different Google account later, change the email here and in `firebase-config.js`.
 
 ```js
 rules_version = '2';
@@ -81,7 +81,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email in ["your-email@gmail.com"];
+        && request.auth.token.email in ["shivanshsingh7117@gmail.com"];
     }
 
     match /applications/{id} {
@@ -199,7 +199,7 @@ git push
 
 `FirebaseError: Missing or insufficient permissions`
 
-Your Firestore rules do not match the current auth flow, or your admin email in the rules is wrong. Paste the rules above and replace `your-email@gmail.com`.
+Your Firestore rules do not match the current auth flow, or the signed-in Google account is not `shivanshsingh7117@gmail.com`. Paste the rules above and publish them.
 
 `Cross-Origin-Opener-Policy would block the window.closed call`
 
@@ -238,3 +238,4 @@ python -m http.server 8080
 ```
 
 Then open `http://localhost:8080`.
+
