@@ -5,9 +5,10 @@ import {
   setDoc,
   serverTimestamp,
   googleProvider,
-  getRedirectResult,
+  browserLocalPersistence,
   onAuthStateChanged,
-  signInWithRedirect,
+  setPersistence,
+  signInWithPopup,
   signOut,
   isAdminEmail,
   normalizeEmail
@@ -20,14 +21,26 @@ const navLogout = document.querySelector("#navLogout");
 const enterSite = document.querySelector("#enterSite");
 const adminPanelLink = document.querySelector("#adminPanelLink");
 const userPill = document.querySelector("#userPill");
+const authMessage = document.querySelector("#authMessage");
 let scrollAfterLogin = false;
+
+function setAuthMessage(text = "", type = "") {
+  if (!authMessage) return;
+  authMessage.textContent = text;
+  authMessage.className = `auth-message ${type}`.trim();
+}
 
 async function login() {
   try {
-    await signInWithRedirect(auth, googleProvider);
+    setAuthMessage("Opening Google login...", "success");
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithPopup(auth, googleProvider);
   } catch (error) {
     console.error(error);
-    alert("Google login could not complete. Check Firebase Auth setup and authorized domains.");
+    const message = error.code === "auth/popup-closed-by-user"
+      ? "Login popup was closed before finishing. Click Continue with Google and complete the popup."
+      : `Google login failed: ${error.code || error.message}`;
+    setAuthMessage(message, "error");
   }
 }
 
@@ -56,6 +69,7 @@ function setLoggedOut() {
   userPill?.classList.add("hidden");
   navLogin?.classList.remove("hidden");
   if (heroLogin) heroLogin.textContent = "Continue with Google";
+  setAuthMessage("Login to unlock the invite page.", "");
 }
 
 function setLoggedIn(user) {
@@ -66,6 +80,7 @@ function setLoggedIn(user) {
   userPill?.classList.remove("hidden");
   if (userPill) userPill.textContent = user.displayName || user.email;
   if (heroLogin) heroLogin.textContent = "Logged In";
+  setAuthMessage(`Signed in as ${user.email}.`, "success");
   adminPanelLink?.classList.toggle("hidden", !isAdminEmail(user.email));
 }
 
@@ -94,5 +109,3 @@ onAuthStateChanged(auth, async (user) => {
     window.setTimeout(() => eventApp?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
   }
 });
-
-getRedirectResult(auth).catch(console.error);

@@ -191,6 +191,16 @@ button { cursor: pointer; }
   gap: 12px;
 }
 
+.auth-message {
+  min-height: 1.4em;
+  margin: 10px 0 0;
+  color: var(--dim);
+  font-size: 0.94rem;
+}
+
+.auth-message.error { color: var(--red); }
+.auth-message.success { color: var(--lime); }
+
 .countdown {
   display: grid;
   grid-template-columns: repeat(4, minmax(70px, 112px));

@@ -3,9 +3,10 @@ import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/12
 import {
   getAuth,
   GoogleAuthProvider,
-  getRedirectResult,
+  browserLocalPersistence,
   onAuthStateChanged,
-  signInWithRedirect,
+  setPersistence,
+  signInWithPopup,
   signOut
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import {
@@ -65,9 +66,10 @@ export {
   serverTimestamp,
   increment,
   setDoc,
-  getRedirectResult,
+  browserLocalPersistence,
   onAuthStateChanged,
-  signInWithRedirect,
+  setPersistence,
+  signInWithPopup,
   signOut
 };
 

@@ -14,9 +14,10 @@ import {
   relativeTime,
   statusLookupId,
   googleProvider,
-  getRedirectResult,
+  browserLocalPersistence,
   onAuthStateChanged,
-  signInWithRedirect,
+  setPersistence,
+  signInWithPopup,
   signOut,
   isAdminEmail
 } from "./firebase-init.js";
@@ -38,10 +39,14 @@ let unsubscribeApplications;
 
 adminGoogleLogin?.addEventListener("click", async () => {
   try {
-    await signInWithRedirect(auth, googleProvider);
+    adminLoginNote.textContent = "Opening Google login...";
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithPopup(auth, googleProvider);
   } catch (error) {
     console.error(error);
-    adminLoginNote.textContent = "Google login failed. Check Firebase Auth setup and authorized domains.";
+    adminLoginNote.textContent = error.code === "auth/popup-closed-by-user"
+      ? "Login popup was closed before finishing. Click Continue with Google and complete the popup."
+      : `Google login failed: ${error.code || error.message}`;
   }
 });
 
@@ -305,5 +310,3 @@ function escapeHTML(value) {
     "'": "&#039;"
   }[char]));
 }
-
-getRedirectResult(auth).catch(console.error);
