@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <title>Admin - Fred again.. Listening Party</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body data-page="admin">
+    <div class="grain" aria-hidden="true"></div>
+    <main class="admin-shell">
+      <section class="admin-login panel" id="adminLogin">
+        <p class="micro">Admin Login</p>
+        <h1>Enter passcode.</h1>
+        <form id="loginForm">
+          <label>Passcode<input type="password" name="passcode" autocomplete="current-password" required /></label>
+          <button class="btn btn-lime full" type="submit">Unlock Dashboard</button>
+          <p class="privacy-note">This area is for hosts only.</p>
+        </form>
+      </section>
+
+      <section class="dashboard hidden" id="dashboard">
+        <aside class="sidebar" aria-label="Admin navigation">
+          <a href="#overview" title="Dashboard">◎</a>
+          <a href="#applications" title="Applications">☷</a>
+          <a href="#settings" title="Settings">⚙</a>
+        </aside>
+
+        <div class="admin-main">
+          <header class="admin-header">
+            <div>
+              <p class="micro">Dashboard Overview</p>
+              <h1>Listening Party Control</h1>
+            </div>
+            <a class="btn btn-outline" href="index.html">View Site</a>
+          </header>
+
+          <section class="stats-grid" id="overview">
+            <article class="stat-card"><span>Total Applications</span><strong id="statTotal">0</strong></article>
+            <article class="stat-card"><span>Approved Headcount</span><strong id="statApproved">0/120</strong></article>
+            <article class="stat-card"><span>Spots Remaining</span><strong id="statRemaining">120</strong></article>
+            <article class="stat-card"><span>Pending Review</span><strong id="statPending">0</strong></article>
+          </section>
+
+          <section class="admin-grid">
+            <article class="panel">
+              <p class="micro">Recent Activity</p>
+              <div class="activity-feed" id="activityFeed"></div>
+            </article>
+            <article class="panel">
+              <p class="micro">Applications Over Time</p>
+              <div class="chart-wrap"><svg id="appsChart" viewBox="0 0 520 180" role="img" aria-label="Applications over time"></svg></div>
+            </article>
+          </section>
+
+          <section class="panel applications-panel" id="applications">
+            <div class="table-toolbar">
+              <div class="tabs" id="statusTabs">
+                <button class="active" data-filter="all">All <span>0</span></button>
+                <button data-filter="pending">Pending <span>0</span></button>
+                <button data-filter="approved">Approved <span>0</span></button>
+                <button data-filter="rejected">Rejected <span>0</span></button>
+              </div>
+              <input id="searchInput" placeholder="Search applicants" />
+              <select id="sortSelect" aria-label="Sort applications">
+                <option value="rating">Sort: Vibe Rating</option>
+                <option value="newest">Sort: Newest</option>
+                <option value="party">Sort: Party Size</option>
+              </select>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Party</th>
+                    <th>Song/Genre</th>
+                    <th>Substances</th>
+                    <th>Vibe</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                  </tr>
+                </thead>
+                <tbody id="applicationsTable"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <aside class="detail-panel" id="detailPanel" aria-hidden="true">
+          <button class="icon-button close-detail" id="closeDetail" type="button" aria-label="Close detail">×</button>
+          <div id="detailContent"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script type="module" src="js/animations.js"></script>
+    <script type="module" src="js/admin.js"></script>
+  </body>
+</html>

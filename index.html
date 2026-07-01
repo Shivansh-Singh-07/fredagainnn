@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <title>Fred again.. Listening Party</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body data-page="guest">
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="hero photo-screen" id="home" data-bg-key="hero">
+      <div class="photo-overlay"></div>
+      <nav class="topbar reveal">
+        <a class="brand" href="#home">FRED AGAIN..</a>
+        <div class="topbar-actions">
+          <a href="#status" class="ghost-link">Status</a>
+          <a href="admin.html" class="ghost-link">Host</a>
+        </div>
+      </nav>
+      <div class="hero-inner">
+        <p class="kicker reveal">FRED AGAIN..</p>
+        <h1 class="hero-title kinetic" data-kinetic="LISTENING PARTY">LISTENING PARTY</h1>
+        <p class="hero-copy reveal">
+          A private, invite-only night for the people who know every tiny build, drop, and voice note.
+        </p>
+        <div class="countdown reveal" data-countdown aria-label="Countdown to event">
+          <div class="time-block"><span data-unit="days">00</span><small>Days</small></div>
+          <div class="time-block"><span data-unit="hours">00</span><small>Hours</small></div>
+          <div class="time-block"><span data-unit="minutes">00</span><small>Mins</small></div>
+          <div class="time-block"><span data-unit="seconds">00</span><small>Secs</small></div>
+        </div>
+        <a href="#apply" class="btn btn-lime btn-hero reveal">Apply for a Spot</a>
+      </div>
+      <div class="hero-tags reveal">PRIVATE · INVITE ONLY · GOOD VIBES ONLY</div>
+    </header>
+
+    <main>
+      <section class="section section-tight" id="apply">
+        <div class="section-heading reveal">
+          <p class="micro">Tell Us About You</p>
+          <h2>Apply for the room.</h2>
+        </div>
+
+        <form class="wizard panel reveal" id="applicationForm" novalidate>
+          <div class="stepper" data-stepper>
+            <div class="step active" data-step-dot="0"><span>1</span><small>About You</small></div>
+            <div class="step-line"><i></i></div>
+            <div class="step" data-step-dot="1"><span>2</span><small>The Vibe</small></div>
+            <div class="step-line"><i></i></div>
+            <div class="step" data-step-dot="2"><span>3</span><small>Extras</small></div>
+          </div>
+
+          <div class="wizard-window">
+            <fieldset class="wizard-step active" data-step="0">
+              <label>Full name<input name="name" autocomplete="name" required /></label>
+              <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+              <label>Phone <em>optional</em><input name="phone" autocomplete="tel" /></label>
+              <label>Favourite Fred again.. song?<input name="favourite_song" required /></label>
+              <label>Favourite genre of music?<input name="favourite_genre" required /></label>
+              <div class="field-group">
+                <span class="label-text">Coming as</span>
+                <div class="segmented" data-party-type>
+                  <button type="button" data-value="Solo" class="selected">Solo</button>
+                  <button type="button" data-value="Couple">Couple</button>
+                  <button type="button" data-value="Group">Group</button>
+                </div>
+              </div>
+              <label class="slide-field" data-group-size>How many people total, including yourself?
+                <input type="number" name="party_size" min="1" max="4" value="1" />
+              </label>
+            </fieldset>
+
+            <fieldset class="wizard-step" data-step="1">
+              <div class="field-group">
+                <span class="label-text">Smoke, drink, or neither?</span>
+                <div class="chips" data-substances>
+                  <label><input type="checkbox" value="Smoke" /> <span>Smoke</span></label>
+                  <label><input type="checkbox" value="Drink" /> <span>Drink</span></label>
+                  <label><input type="checkbox" value="Neither" /> <span>Neither</span></label>
+                </div>
+              </div>
+              <label>Favourite artist?<input name="favourite_artist" required /></label>
+              <label>Instagram username<input name="instagram_handle" placeholder="@yourhandle" /></label>
+            </fieldset>
+
+            <fieldset class="wizard-step" data-step="2">
+              <label>Anything else we should know?
+                <textarea name="applicant_notes" rows="5"></textarea>
+              </label>
+              <article class="info-card">
+                <div class="line-icon" data-icon="lock"></div>
+                <div>
+                  <p class="micro">How This Works</p>
+                  <p>Applications are reviewed personally. Vibe-matched guests get details revealed only when approved. Good-people-only, no exceptions.</p>
+                </div>
+              </article>
+              <p class="privacy-note"><span class="line-icon small" data-icon="lock"></span> Your details stay with the hosts and are used only for this event.</p>
+            </fieldset>
+          </div>
+
+          <div class="wizard-actions">
+            <button type="button" class="btn btn-outline" data-back hidden>Back</button>
+            <button type="button" class="btn btn-pink" data-next>Next</button>
+            <button type="submit" class="btn btn-lime" data-submit hidden>Submit Application</button>
+          </div>
+          <p class="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="confirmation photo-screen hidden" id="confirmation" data-bg-key="confirmation">
+        <div class="photo-overlay"></div>
+        <div class="center-stack reveal">
+          <div class="burst" aria-hidden="true">+</div>
+          <p class="micro">Application Received</p>
+          <h2>We've got your application.</h2>
+          <p>We'll be in touch soon. This is confirmation of receipt, not approval yet.</p>
+          <a class="btn btn-outline" href="#status">Check Your Status</a>
+        </div>
+      </section>
+
+      <section class="section" id="status">
+        <div class="section-heading reveal">
+          <p class="micro">Check Your Status</p>
+          <h2>See you on the dancefloor?</h2>
+        </div>
+        <form class="lookup panel reveal" id="statusForm">
+          <label>Email<input type="email" name="status_email" required /></label>
+          <button class="btn btn-lime" type="submit">Check Status</button>
+          <p class="privacy-note">We only show status for the matching application email.</p>
+        </form>
+        <div id="statusResult" class="status-result"></div>
+      </section>
+
+      <section class="section photo-strip" id="approvedArea" data-bg-key="approved" hidden>
+        <div class="photo-overlay soft"></div>
+        <div class="approved-grid">
+          <div class="approved-copy reveal">
+            <p class="micro">Approved Guest Access</p>
+            <h2 class="neon">See you Saturday.</h2>
+            <p id="approvedSubline">For you + 0 guests</p>
+          </div>
+          <article class="details-card reveal">
+            <p><span class="line-icon small" data-icon="location"></span><strong>Location</strong><span>Revealed by host</span></p>
+            <p><span class="line-icon small" data-icon="clock"></span><strong>Arrival</strong><span>Saturday, 8:30 PM</span></p>
+            <p><span class="line-icon small" data-icon="hanger"></span><strong>Dress</strong><span>Black, silver, something you can move in</span></p>
+            <p><span class="line-icon small" data-icon="lock"></span><strong>Reminder</strong><span>Respect the space. No phones on the dancefloor.</span></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section two-col" id="requests" hidden>
+        <div>
+          <div class="section-heading reveal">
+            <p class="micro live-dot">Song Requests</p>
+            <h2>Live</h2>
+          </div>
+          <div class="tabs reveal" data-request-tabs>
+            <button class="active" data-sort="newest">Newest</button>
+            <button data-sort="top">Top Voted</button>
+          </div>
+          <div class="request-list panel reveal" id="requestList"></div>
+          <form class="submit-track reveal" id="requestForm">
+            <input name="track" placeholder="Track" required />
+            <input name="artist" placeholder="Artist" required />
+            <button class="btn btn-lime" type="submit">Submit a Track</button>
+          </form>
+        </div>
+        <aside>
+          <div class="section-heading reveal">
+            <p class="micro">Who's Coming</p>
+            <h2 id="headcount">0 people</h2>
+          </div>
+          <div class="guest-list panel reveal" id="guestList"></div>
+          <button class="btn btn-outline full" id="expandGuests" type="button">Open Full List</button>
+        </aside>
+      </section>
+    </main>
+
+    <template id="iconTemplate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </template>
+
+    <script type="module" src="js/background-images.js"></script>
+    <script type="module" src="js/animations.js"></script>
+    <script type="module" src="js/application-form.js"></script>
+    <script type="module" src="js/guest-status.js"></script>
+    <script type="module" src="js/requests.js"></script>
+  </body>
+</html>
