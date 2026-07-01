@@ -46,10 +46,10 @@ export const ADMIN_EMAILS = (localAdminEmails || []).map((email) => normalizeEma
 export const EVENT_CONFIG = {
   MAX_GUESTS: 120,
   MAX_PARTY_SIZE: 4,
-  EVENT_DATE: "2026-07-18T20:30:00+05:30",
-  EVENT_LOCATION: "Revealed when approved",
-  ARRIVAL_TIME: "Saturday, 8:30 PM",
-  DRESS_CODE: "Black, silver, something you can move in",
+  EVENT_DATE: "2026-07-18T18:30:00+05:30",
+  EVENT_LOCATION: "Qutub Area, Delhi. Exact location shared after RSVP confirmation.",
+  ARRIVAL_TIME: "Saturday, 18 July 2026 · 6:30 PM - 1:00 AM",
+  DRESS_CODE: "Invite-only. BYOB allowed; venue corkage/setup fee per person applies at the gate.",
   ...localEventConfig
 };
 

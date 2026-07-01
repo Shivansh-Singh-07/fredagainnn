@@ -131,10 +131,10 @@ function renderApproved(app) {
   document.querySelector("#approvedArea").hidden = false;
   document.querySelector("#approvedSubline").textContent = `For you + ${guests} guest${guests === 1 ? "" : "s"}`;
   document.querySelector(".details-card").innerHTML = `
-    <p>${icon("location", "line-icon small")}<strong>Location</strong><span>${escapeHTML(EVENT_CONFIG.EVENT_LOCATION)}</span></p>
-    <p>${icon("clock", "line-icon small")}<strong>Arrival</strong><span>${escapeHTML(EVENT_CONFIG.ARRIVAL_TIME)}</span></p>
-    <p>${icon("hanger", "line-icon small")}<strong>Dress</strong><span>${escapeHTML(EVENT_CONFIG.DRESS_CODE)}</span></p>
-    <p>${icon("lock", "line-icon small")}<strong>Reminder</strong><span>Respect the space. No phones on the dancefloor.</span></p>
+    <p>${icon("location", "line-icon small")}<strong>Venue</strong><span>${escapeHTML(EVENT_CONFIG.EVENT_LOCATION)}</span></p>
+    <p>${icon("clock", "line-icon small")}<strong>Time</strong><span>${escapeHTML(EVENT_CONFIG.ARRIVAL_TIME)}</span></p>
+    <p>${icon("lock", "line-icon small")}<strong>Access</strong><span>Invite-only. Please fill the RSVP form to get the invitation.</span></p>
+    <p>${icon("hanger", "line-icon small")}<strong>BYOB</strong><span>Guests may bring their own beverages. A venue corkage/setup fee per person applies at the gate.</span></p>
   `;
 }
 
