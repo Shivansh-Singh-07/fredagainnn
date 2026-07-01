@@ -47,6 +47,7 @@ async function login() {
 async function logout() {
   await signOut(auth);
   sessionStorage.removeItem("approvedGuestEmail");
+  sessionStorage.removeItem("firebase:previous_websocket_failure");
   window.location.hash = "#home";
 }
 

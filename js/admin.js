@@ -50,7 +50,11 @@ adminGoogleLogin?.addEventListener("click", async () => {
   }
 });
 
-adminLogout?.addEventListener("click", () => signOut(auth));
+adminLogout?.addEventListener("click", async () => {
+  await signOut(auth);
+  sessionStorage.removeItem("approvedGuestEmail");
+  window.location.href = "index.html#home";
+});
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
