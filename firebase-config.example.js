@@ -18,5 +18,6 @@ export const EVENT_CONFIG = {
 };
 
 export const ADMIN_EMAILS = [
-  "your-email@gmail.com"
+  "your-email@gmail.com",
+  "another-admin@gmail.com"
 ];

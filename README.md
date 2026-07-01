@@ -52,21 +52,22 @@ Open `firebase-config.js` and confirm this matches the Google account you use fo
 
 ```js
 export const ADMIN_EMAILS = [
-  "shivanshsingh7117@gmail.com"
+  "shivanshsingh7117@gmail.com",
+  "choudharyshraddha042@gmail.com"
 ];
 ```
 
 Use the exact Google email you will login with. Keep it lowercase. The same email is already used in the Firestore rules below:
 
 ```js
-request.auth.token.email in ["shivanshsingh7117@gmail.com"]
+request.auth.token.email in ["shivanshsingh7117@gmail.com", "choudharyshraddha042@gmail.com"]
 ```
 
 ## Firestore Rules
 
 Paste this into Firebase Console -> Firestore Database -> Rules.
 
-Important: these rules are already set for `shivanshsingh7117@gmail.com`. If you use a different Google account later, change the email here and in `firebase-config.js`.
+Important: these rules are already set for `shivanshsingh7117@gmail.com` and `choudharyshraddha042@gmail.com`. If you use a different Google account later, change the email here and in `firebase-config.js`.
 
 ```js
 rules_version = '2';
@@ -78,7 +79,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email in ["shivanshsingh7117@gmail.com"];
+        && request.auth.token.email in ["shivanshsingh7117@gmail.com", "choudharyshraddha042@gmail.com"];
     }
 
     match /applications/{id} {
@@ -167,7 +168,7 @@ git push
 
 `FirebaseError: Missing or insufficient permissions`
 
-Your Firestore rules do not match the current auth flow, or the signed-in Google account is not `shivanshsingh7117@gmail.com`. Paste the rules above and publish them.
+Your Firestore rules do not match the current auth flow, or the signed-in Google account is not in the admin email list. Paste the rules above and publish them.
 
 `Cross-Origin-Opener-Policy would block the window.closed call`
 

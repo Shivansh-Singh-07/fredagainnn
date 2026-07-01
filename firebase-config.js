@@ -18,5 +18,6 @@ export const EVENT_CONFIG = {
 };
 
 export const ADMIN_EMAILS = [
-  "shivanshsingh7117@gmail.com"
+  "shivanshsingh7117@gmail.com",
+  "choudharyshraddha042@gmail.com"
 ];
