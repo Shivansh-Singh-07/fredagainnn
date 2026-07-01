@@ -1,9 +1,9 @@
 ﻿export const BACKGROUND_IMAGES = {
-  hero: "assets/hero.jpg",
-  confirmation: "assets/confirmation.jpg",
-  approved: "assets/approved.jpg",
-  requests: "assets/requests.jpg",
-  crowd: "assets/crowd.jpg"
+  hero: "assets/approved.jpg",
+  confirmation: "assets/requests.jpg",
+  approved: "assets/crowd.jpg",
+  requests: "assets/confirmation.jpg",
+  crowd: "assets/hero.jpg"
 };
 
 function assetUrl(path) {
