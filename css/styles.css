@@ -507,6 +507,25 @@ input:focus, textarea:focus, select:focus {
   min-height: 560px;
 }
 
+.photo-backed > :not(.photo-overlay) {
+  position: relative;
+  z-index: 2;
+}
+
+.event-brief.photo-strip,
+.status-photo.photo-strip {
+  min-height: auto;
+}
+
+.event-brief.photo-strip {
+  padding-bottom: clamp(72px, 9vw, 116px);
+}
+
+.status-photo.photo-strip {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
 .approved-grid {
   position: relative;
   z-index: 2;
