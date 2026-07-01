@@ -26,12 +26,29 @@ function kineticType() {
   document.querySelectorAll("[data-kinetic]").forEach((el) => {
     const text = el.dataset.kinetic || el.textContent;
     el.textContent = "";
-    [...text].forEach((char, index) => {
-      const span = document.createElement("span");
-      span.className = char === " " ? "char space" : "char";
-      span.style.setProperty("--i", index);
-      span.textContent = char === " " ? "\u00a0" : char;
-      el.append(span);
+    let index = 0;
+
+    text.split(" ").forEach((word, wordIndex, words) => {
+      const wordSpan = document.createElement("span");
+      wordSpan.className = "word";
+
+      [...word].forEach((char) => {
+        const span = document.createElement("span");
+        span.className = "char";
+        span.style.setProperty("--i", index);
+        span.textContent = char;
+        wordSpan.append(span);
+        index += 1;
+      });
+
+      el.append(wordSpan);
+
+      if (wordIndex < words.length - 1) {
+        const space = document.createElement("span");
+        space.className = "space";
+        space.textContent = "\u00a0";
+        el.append(space);
+      }
     });
   });
 }

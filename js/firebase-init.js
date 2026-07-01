@@ -46,7 +46,7 @@ export const ADMIN_EMAILS = (localAdminEmails || []).map((email) => normalizeEma
 export const EVENT_CONFIG = {
   MAX_GUESTS: 120,
   MAX_PARTY_SIZE: 4,
-  EVENT_DATE: "2026-08-15T20:30:00+05:30",
+  EVENT_DATE: "2026-07-18T20:30:00+05:30",
   EVENT_LOCATION: "Revealed when approved",
   ARRIVAL_TIME: "Saturday, 8:30 PM",
   DRESS_CODE: "Black, silver, something you can move in",
