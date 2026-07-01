@@ -4,11 +4,8 @@ import {
   EVENT_CONFIG,
   collection,
   addDoc,
-  doc,
-  setDoc,
   serverTimestamp,
-  normalizeEmail,
-  statusLookupId
+  normalizeEmail
 } from "./firebase-init.js";
 
 const form = document.querySelector("#applicationForm");
@@ -128,16 +125,7 @@ if (form) {
     };
 
     try {
-      const created = await addDoc(collection(db, "applications"), payload);
-      await setDoc(doc(db, "status_lookup", await statusLookupId(payload.email)), {
-        application_id: created.id,
-        uid: payload.uid,
-        email: payload.email,
-        status: "pending",
-        party_size: payload.party_size,
-        party_type: payload.party_type,
-        updated_at: serverTimestamp()
-      });
+      await addDoc(collection(db, "applications"), payload);
       form.reset();
       syncUser(auth.currentUser);
       form.querySelector('[data-value="Solo"]').click();

@@ -2,7 +2,6 @@
   hero: "assets/hero.jpg",
   confirmation: "assets/confirmation.jpg",
   approved: "assets/approved.jpg",
-  requests: "assets/requests.jpg",
   crowd: "assets/crowd.jpg"
 };
 

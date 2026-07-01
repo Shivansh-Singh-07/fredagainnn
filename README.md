@@ -15,7 +15,6 @@ js/firebase-init.js
 js/auth.js
 js/application-form.js
 js/guest-status.js
-js/requests.js
 js/admin.js
 js/animations.js
 assets/
@@ -27,7 +26,7 @@ assets/
 2. User clicks `Continue with Google`.
 3. After Google login, the main event site appears.
 4. The application form uses the logged-in Google email.
-5. The status panel updates live from Firestore.
+5. The status panel watches the logged-in user's own application by `uid`.
 6. If the logged-in email is in `ADMIN_EMAILS`, an `Admin Panel` button appears.
 7. The admin dashboard lets the host view, approve, reject, update, and delete registrations.
 
@@ -47,9 +46,9 @@ assets/
 9. Paste the rules from `Firestore Rules` below.
 10. Publish the rules.
 
-## Set Your Admin Email
+## Confirm Your Admin Email
 
-Open `firebase-config.js` and replace the placeholder:
+Open `firebase-config.js` and confirm this matches the Google account you use for admin:
 
 ```js
 export const ADMIN_EMAILS = [
@@ -57,9 +56,7 @@ export const ADMIN_EMAILS = [
 ];
 ```
 
-Use the exact Google email you will login with. Keep it lowercase.
-
-Also replace the same email in the Firestore rules below:
+Use the exact Google email you will login with. Keep it lowercase. The same email is already used in the Firestore rules below:
 
 ```js
 request.auth.token.email in ["shivanshsingh7117@gmail.com"]
@@ -91,7 +88,10 @@ service cloud.firestore {
         && request.resource.data.status == "pending"
         && request.resource.data.party_size <= 4;
 
-      allow read, update, delete: if isAdmin();
+      allow read: if isAdmin()
+        || (isSignedIn() && resource.data.uid == request.auth.uid);
+
+      allow update, delete: if isAdmin();
     }
 
     match /users/{uid} {
@@ -101,37 +101,6 @@ service cloud.firestore {
       allow read, delete: if isAdmin();
     }
 
-    match /status_lookup/{id} {
-      allow get: if true;
-      allow list: if false;
-
-      allow create: if isSignedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.email == request.auth.token.email
-        && request.resource.data.status == "pending";
-
-      allow update, delete: if isAdmin();
-    }
-
-    match /approved_guests/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /song_requests/{id} {
-      allow read: if true;
-
-      allow create: if isSignedIn()
-        && request.resource.data.track is string
-        && request.resource.data.artist is string
-        && request.resource.data.votes == 0;
-
-      allow update: if isSignedIn()
-        && request.resource.data.diff(resource.data).changedKeys().hasOnly(["votes"])
-        && request.resource.data.votes == resource.data.votes + 1;
-
-      allow delete: if isAdmin();
-    }
   }
 }
 ```
@@ -159,9 +128,7 @@ Replace files in `assets/`, or edit `js/background-images.js`:
 export const BACKGROUND_IMAGES = {
   hero: "assets/hero.jpg",
   confirmation: "assets/confirmation.jpg",
-  approved: "assets/approved.jpg",
-  requests: "assets/requests.jpg",
-  crowd: "assets/crowd.jpg"
+  approved: "assets/approved.jpg"
 };
 ```
 
@@ -191,9 +158,10 @@ git push
    - Google login works.
    - Main event site appears after login.
    - Application can submit.
-   - Status panel updates.
+   - Status panel changes from `No application found` to `Pending Review`.
    - Admin Panel button appears only for your admin email.
    - Admin dashboard can approve, reject, update, and delete registrations.
+   - Approved users see the event details section.
 
 ## Troubleshooting
 
@@ -203,7 +171,7 @@ Your Firestore rules do not match the current auth flow, or the signed-in Google
 
 `Cross-Origin-Opener-Policy would block the window.closed call`
 
-This is common noise from Google popup sign-in in Chrome. The code now falls back to redirect login if the popup is blocked or closed.
+This is common noise from Google popup sign-in in Chrome. It is usually harmless if the page shows `Signed in as ...` after login.
 
 `net::ERR_BLOCKED_BY_CLIENT`
 

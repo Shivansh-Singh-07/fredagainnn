@@ -55,7 +55,7 @@
           </article>
           <article class="panel reveal">
             <p class="micro">Live Status</p>
-            <p>Your status updates automatically when the host reviews your application. Approved guests unlock requests, details, and who's coming.</p>
+            <p>Your status updates automatically when the host reviews your application. Approved guests get the event details revealed on this page.</p>
           </article>
           <article class="panel reveal">
             <p class="micro">Privacy</p>
@@ -143,21 +143,22 @@
           <p class="micro">Application Received</p>
           <h2>We've got your application.</h2>
           <p>We'll be in touch soon. This is confirmation of receipt, not approval yet.</p>
-          <a class="btn btn-outline" href="#status">Check Your Status</a>
+          <a class="btn btn-outline" href="#status">View Your Status</a>
         </div>
       </section>
 
       <section class="section" id="status">
         <div class="section-heading reveal">
-          <p class="micro">Check Your Status</p>
+          <p class="micro">Your Application</p>
           <h2>See you on the dancefloor?</h2>
         </div>
-        <form class="lookup panel reveal" id="statusForm">
-          <label>Email<input type="email" name="status_email" required /></label>
-          <button class="btn btn-lime" type="submit">Check Status</button>
-          <p class="privacy-note">We only show status for the matching application email.</p>
-        </form>
-        <div id="statusResult" class="status-result"></div>
+        <div id="statusResult" class="status-result reveal">
+          <article class="status-panel panel">
+            <p class="micro">Status</p>
+            <h3>Login required.</h3>
+            <p>Sign in with Google and your application status will appear here automatically.</p>
+          </article>
+        </div>
       </section>
 
       <section class="section photo-strip" id="approvedArea" data-bg-key="approved" hidden>
@@ -176,33 +177,6 @@
           </article>
         </div>
       </section>
-
-      <section class="section two-col" id="requests" hidden>
-        <div>
-          <div class="section-heading reveal">
-            <p class="micro live-dot">Song Requests</p>
-            <h2>Live</h2>
-          </div>
-          <div class="tabs reveal" data-request-tabs>
-            <button class="active" data-sort="newest">Newest</button>
-            <button data-sort="top">Top Voted</button>
-          </div>
-          <div class="request-list panel reveal" id="requestList"></div>
-          <form class="submit-track reveal" id="requestForm">
-            <input name="track" placeholder="Track" required />
-            <input name="artist" placeholder="Artist" required />
-            <button class="btn btn-lime" type="submit">Submit a Track</button>
-          </form>
-        </div>
-        <aside>
-          <div class="section-heading reveal">
-            <p class="micro">Who's Coming</p>
-            <h2 id="headcount">0 people</h2>
-          </div>
-          <div class="guest-list panel reveal" id="guestList"></div>
-          <button class="btn btn-outline full" id="expandGuests" type="button">Open Full List</button>
-        </aside>
-      </section>
     </main>
 
     <template id="iconTemplate">
@@ -214,6 +188,5 @@
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/application-form.js"></script>
     <script type="module" src="js/guest-status.js"></script>
-    <script type="module" src="js/requests.js"></script>
   </body>
 </html>

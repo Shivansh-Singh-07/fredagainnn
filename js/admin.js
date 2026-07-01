@@ -4,7 +4,6 @@ import {
   EVENT_CONFIG,
   collection,
   doc,
-  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -12,7 +11,6 @@ import {
   onSnapshot,
   serverTimestamp,
   relativeTime,
-  statusLookupId,
   googleProvider,
   browserLocalPersistence,
   onAuthStateChanged,
@@ -264,34 +262,12 @@ function openDetail(app) {
       updated_at: serverTimestamp()
     };
     await updateDoc(doc(db, "applications", app.id), payload);
-    await setDoc(doc(db, "status_lookup", await statusLookupId(app.email)), {
-      application_id: app.id,
-      uid: app.uid || "",
-      email: app.email,
-      status,
-      party_size: Number(app.party_size || 1),
-      party_type: app.party_type,
-      updated_at: serverTimestamp()
-    });
-    if (status === "approved") {
-      await setDoc(doc(db, "approved_guests", app.id), {
-        name: app.name,
-        email: app.email,
-        party_type: app.party_type,
-        party_size: Number(app.party_size || 1),
-        approved_at: serverTimestamp()
-      });
-    } else {
-      await deleteDoc(doc(db, "approved_guests", app.id)).catch(() => {});
-    }
     form.querySelector(".form-message").textContent = "Updated.";
   });
 
   form.querySelector("[data-delete]").addEventListener("click", async () => {
     if (!confirm(`Delete ${app.name}'s application?`)) return;
     await deleteDoc(doc(db, "applications", app.id));
-    await deleteDoc(doc(db, "approved_guests", app.id)).catch(() => {});
-    await deleteDoc(doc(db, "status_lookup", await statusLookupId(app.email))).catch(() => {});
     closeDetail();
   });
 }

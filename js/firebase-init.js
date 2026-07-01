@@ -84,16 +84,6 @@ export function isAdminEmail(email) {
   return ADMIN_EMAILS.includes(normalizeEmail(email));
 }
 
-export async function statusLookupId(email) {
-  const normalized = normalizeEmail(email);
-  if (window.crypto?.subtle) {
-    const bytes = new TextEncoder().encode(normalized);
-    const hash = await window.crypto.subtle.digest("SHA-256", bytes);
-    return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  }
-  return btoa(normalized).replace(/[+/=]/g, "");
-}
-
 export function firstName(name) {
   return String(name || "Guest").trim().split(/\s+/)[0] || "Guest";
 }

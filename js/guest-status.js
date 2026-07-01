@@ -2,116 +2,153 @@ import {
   auth,
   db,
   EVENT_CONFIG,
-  doc,
-  getDoc,
+  collection,
+  query,
+  where,
+  limit,
   onSnapshot,
-  onAuthStateChanged,
-  normalizeEmail,
-  statusLookupId
+  onAuthStateChanged
 } from "./firebase-init.js";
 import { icon } from "./animations.js";
 
-const form = document.querySelector("#statusForm");
 const result = document.querySelector("#statusResult");
-let unsubscribeStatus;
+let unsubscribeApplication;
 
-if (form && result) {
-  const emailInput = form.elements.status_email;
-
+if (result) {
   onAuthStateChanged(auth, (user) => {
+    if (unsubscribeApplication) unsubscribeApplication();
+
     if (!user) {
-      if (unsubscribeStatus) unsubscribeStatus();
+      hideApprovedDetails();
+      renderLoggedOut();
       return;
     }
-    emailInput.value = normalizeEmail(user.email);
-    watchStatus(user.email);
-  });
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const email = normalizeEmail(new FormData(form).get("status_email"));
-    result.innerHTML = `<article class="status-panel panel"><p>Checking...</p></article>`;
-    try {
-      const snap = await getDoc(doc(db, "status_lookup", await statusLookupId(email)));
-      if (!snap.exists()) {
-        result.innerHTML = rejectedPanel("No application found for that email.");
-        return;
-      }
-      const app = { id: snap.id, ...snap.data() };
-      renderStatus(app);
-    } catch (error) {
-      console.error(error);
-      result.innerHTML = `<article class="status-panel panel"><h3>Could not check status</h3><p>Make sure Firebase is configured and the lookup index exists.</p></article>`;
-    }
+    watchApplication(user);
   });
 }
 
-async function watchStatus(email) {
-  if (!result) return;
-  if (unsubscribeStatus) unsubscribeStatus();
-  const ref = doc(db, "status_lookup", await statusLookupId(email));
-  unsubscribeStatus = onSnapshot(ref, (snap) => {
-    if (!snap.exists()) {
-      result.innerHTML = `<article class="status-panel panel"><p class="micro">Registration Status</p><h3>Not registered yet.</h3><p>Submit the application form and this panel will update automatically.</p></article>`;
+function watchApplication(user) {
+  result.innerHTML = `
+    <article class="status-panel panel">
+      <p class="micro">Your Application</p>
+      <h3>Checking...</h3>
+      <p>Looking for an application connected to ${escapeHTML(user.email)}.</p>
+    </article>
+  `;
+
+  const q = query(
+    collection(db, "applications"),
+    where("uid", "==", user.uid),
+    limit(1)
+  );
+
+  unsubscribeApplication = onSnapshot(q, (snap) => {
+    if (snap.empty) {
+      hideApprovedDetails();
+      renderNotRegistered(user);
       return;
     }
-    renderStatus({ id: snap.id, ...snap.data() });
+
+    const app = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    renderStatus(app);
   }, (error) => {
     console.error(error);
+    hideApprovedDetails();
+    result.innerHTML = `
+      <article class="status-panel panel">
+        <p class="micro">Status Unavailable</p>
+        <h3>Permission issue.</h3>
+        <p>Firestore rules need to allow signed-in users to read their own application by uid.</p>
+      </article>
+    `;
   });
+}
+
+function renderLoggedOut() {
+  result.innerHTML = `
+    <article class="status-panel panel">
+      <p class="micro">Status</p>
+      <h3>Login required.</h3>
+      <p>Sign in with Google and your application status will appear here automatically.</p>
+    </article>
+  `;
+}
+
+function renderNotRegistered(user) {
+  result.innerHTML = `
+    <article class="status-panel panel">
+      <p class="micro">Not Registered Yet</p>
+      <h3>No application found.</h3>
+      <p>${escapeHTML(user.email)} has not submitted an application yet. Fill the form above and this panel will update automatically.</p>
+      <a class="btn btn-lime" href="#apply">Apply Now</a>
+    </article>
+  `;
 }
 
 function renderStatus(app) {
   if (app.status === "approved") {
-    const guests = Math.max(0, Number(app.party_size || 1) - 1);
-    result.innerHTML = `
-      <article class="status-panel panel approved">
-        <h3 class="neon">See you Saturday</h3>
-        <p>For you + ${guests} guest${guests === 1 ? "" : "s"}</p>
-        <div>
-          <a class="btn btn-pink" href="#requests" id="showRequests">View Song Requests</a>
-          <a class="btn btn-outline" href="#requests" id="showGuests">See Who's Coming</a>
-        </div>
-      </article>
-    `;
-    document.querySelector("#approvedArea").hidden = false;
-    document.querySelector("#requests").hidden = false;
-    document.querySelector("#approvedSubline").textContent = `For you + ${guests} guest${guests === 1 ? "" : "s"}`;
-    document.querySelector(".details-card").innerHTML = `
-      <p>${icon("location", "line-icon small")}<strong>Location</strong><span>${EVENT_CONFIG.EVENT_LOCATION}</span></p>
-      <p>${icon("clock", "line-icon small")}<strong>Arrival</strong><span>${EVENT_CONFIG.ARRIVAL_TIME}</span></p>
-      <p>${icon("hanger", "line-icon small")}<strong>Dress</strong><span>${EVENT_CONFIG.DRESS_CODE}</span></p>
-      <p>${icon("lock", "line-icon small")}<strong>Reminder</strong><span>Respect the space. No phones on the dancefloor.</span></p>
-    `;
-    sessionStorage.setItem("approvedGuestEmail", app.email);
-    document.dispatchEvent(new CustomEvent("guest-approved"));
+    renderApproved(app);
     return;
   }
 
   if (app.status === "rejected") {
-    result.innerHTML = rejectedPanel("It's a curated vibe and we're keeping it small this time. Hope to see you at the next one.");
+    hideApprovedDetails();
+    result.innerHTML = `
+      <article class="status-panel panel">
+        ${icon("sad")}
+        <p class="micro">Not This Time</p>
+        <h3>Keeping it small.</h3>
+        <p>It's a curated vibe and we're keeping it small this time. Hope to see you at the next one.</p>
+      </article>
+    `;
     return;
   }
 
+  hideApprovedDetails();
   result.innerHTML = `
     <article class="status-panel panel">
       ${icon("hourglass")}
       <p class="micro">Pending Review</p>
       <h3>Good things take time.</h3>
-      <p>Your application is still being reviewed personally.</p>
-      <a class="btn btn-outline" href="#home">Back Home</a>
+      <p>Your application is in. The host has not reviewed it yet.</p>
     </article>
   `;
 }
 
-function rejectedPanel(copy) {
-  return `
-    <article class="status-panel panel">
-      ${icon("sad")}
-      <p class="micro">Not This Time</p>
-      <h3>Keeping it small.</h3>
-      <p>${copy}</p>
-      <a class="btn btn-outline" href="#home">Back Home</a>
+function renderApproved(app) {
+  const guests = Math.max(0, Number(app.party_size || 1) - 1);
+
+  result.innerHTML = `
+    <article class="status-panel panel approved">
+      <p class="micro">Approved</p>
+      <h3 class="neon">See you Saturday.</h3>
+      <p>For you + ${guests} guest${guests === 1 ? "" : "s"}.</p>
+      <a class="btn btn-pink" href="#approvedArea">View Event Details</a>
     </article>
   `;
+
+  document.querySelector("#approvedArea").hidden = false;
+  document.querySelector("#approvedSubline").textContent = `For you + ${guests} guest${guests === 1 ? "" : "s"}`;
+  document.querySelector(".details-card").innerHTML = `
+    <p>${icon("location", "line-icon small")}<strong>Location</strong><span>${escapeHTML(EVENT_CONFIG.EVENT_LOCATION)}</span></p>
+    <p>${icon("clock", "line-icon small")}<strong>Arrival</strong><span>${escapeHTML(EVENT_CONFIG.ARRIVAL_TIME)}</span></p>
+    <p>${icon("hanger", "line-icon small")}<strong>Dress</strong><span>${escapeHTML(EVENT_CONFIG.DRESS_CODE)}</span></p>
+    <p>${icon("lock", "line-icon small")}<strong>Reminder</strong><span>Respect the space. No phones on the dancefloor.</span></p>
+  `;
+}
+
+function hideApprovedDetails() {
+  const approvedArea = document.querySelector("#approvedArea");
+  if (approvedArea) approvedArea.hidden = true;
+}
+
+function escapeHTML(value) {
+  return String(value || "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[char]));
 }
