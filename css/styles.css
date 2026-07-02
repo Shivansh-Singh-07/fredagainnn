@@ -388,7 +388,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .step-line.filled i { width: 100%; }
-.wizard-window { position: relative; min-height: 560px; }
+.wizard-window { position: relative; min-height: 560px; transition: min-height 260ms var(--ease); }
 .wizard-step {
   position: absolute;
   inset: 0;
@@ -739,7 +739,6 @@ tbody tr:hover { background: rgba(255,255,255,0.035); }
   .step-line { display: none; }
   .step { min-width: 0; }
   .step small { font-size: 0.62rem; letter-spacing: 0.08em; }
-  .wizard-window { min-height: 650px; }
   .wizard-actions { flex-direction: column-reverse; }
   .details-card p { grid-template-columns: 22px 1fr; }
   .details-card p span:last-child { grid-column: 2; }

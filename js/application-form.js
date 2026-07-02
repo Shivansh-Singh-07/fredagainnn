@@ -23,6 +23,7 @@ if (form) {
   const message = form.querySelector(".form-message");
   const groupSize = form.querySelector("[data-group-size]");
   const partySizeInput = form.elements.party_size;
+  const wizardWindow = form.querySelector(".wizard-window");
 
   partySizeInput.max = EVENT_CONFIG.MAX_PARTY_SIZE;
 
@@ -58,6 +59,15 @@ if (form) {
     back.hidden = step === 0;
     next.hidden = step === 2;
     submit.hidden = step !== 2;
+    syncWizardHeight();
+  }
+
+  function syncWizardHeight() {
+    const activeStep = steps[step];
+    if (!wizardWindow || !activeStep) return;
+    window.requestAnimationFrame(() => {
+      wizardWindow.style.minHeight = `${activeStep.scrollHeight}px`;
+    });
   }
 
   function validateStep() {
@@ -82,6 +92,7 @@ if (form) {
     form.querySelectorAll("[data-party-type] button").forEach((item) => item.classList.toggle("selected", item === button));
     groupSize.classList.toggle("open", partyType === "Group");
     partySizeInput.value = partyType === "Solo" ? 1 : partyType === "Couple" ? 2 : Math.max(3, Number(partySizeInput.value || 3));
+    window.setTimeout(syncWizardHeight, 280);
   });
 
   next.addEventListener("click", () => {
@@ -89,6 +100,7 @@ if (form) {
   });
 
   back.addEventListener("click", () => setStep(step - 1));
+  syncWizardHeight();
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
