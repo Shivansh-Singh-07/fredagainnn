@@ -223,6 +223,8 @@ function openDetail(app) {
         <p><strong>Genre</strong><br>${escapeHTML(app.favourite_genre || "")}</p>
         <p><strong>Artist</strong><br>${escapeHTML(app.favourite_artist || "")}</p>
         <p><strong>Substances</strong><br>${(app.substance_pref || []).join(", ") || "None shared"}</p>
+        <p><strong>Dance floor</strong><br>${escapeHTML(app.dance_floor_energy || "No answer")}</p>
+        <p><strong>Leaves early if</strong><br>${escapeHTML(app.party_exit_reason || "No answer")}</p>
         <p><strong>Notes</strong><br>${escapeHTML(app.applicant_notes || "No notes")}</p>
       </div>
       <div>

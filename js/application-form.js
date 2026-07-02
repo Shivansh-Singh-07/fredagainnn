@@ -116,6 +116,8 @@ if (form) {
       substance_pref: substances,
       favourite_artist: data.get("favourite_artist").trim(),
       instagram_handle: data.get("instagram_handle").trim(),
+      dance_floor_energy: data.get("dance_floor_energy").trim(),
+      party_exit_reason: data.get("party_exit_reason").trim(),
       applicant_notes: data.get("applicant_notes").trim(),
       status: "pending",
       host_rating: 0,
